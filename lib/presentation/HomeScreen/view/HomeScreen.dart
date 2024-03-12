@@ -63,6 +63,38 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /* Future<void> postData() async {
+    try {
+      final Uri uri = Uri.parse(
+          "https://example.com/api/endpoint"); // Replace with your POST API endpoint
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+
+      final Map<String, dynamic> requestBody = {
+        'key': 'value',
+        'data': 'example data',
+      };
+
+      http.Response response = await http.post(
+        uri,
+        headers: headers,
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        // Request successful, handle response
+        print("POST Request successful. Response: ${response.body}");
+      } else {
+        // Request failed, handle error
+        print("Failed to post data. Status code: ${response.statusCode}");
+      }
+    } catch (error) {
+      // Handle network errors
+      print("Error: $error");
+    }
+  }
+*/
   @override
   void initState() {
     apicall();
@@ -100,6 +132,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Trigger the POST request when the FloatingActionButton is pressed
+          // postData();
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
