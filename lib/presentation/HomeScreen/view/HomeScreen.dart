@@ -15,7 +15,7 @@ class Product {
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -23,25 +23,43 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<Product> productList;
-  Future<void> apicall() async {
-    http.Response response =
-        await http.get(Uri.parse("https://fakestoreapi.com/products"));
-    if (response.statusCode == 200) {
-      List<dynamic> productsData = json.decode(response.body);
-      List<Product> products = productsData.map((data) {
-        return Product(
-          title: data['title'],
-          price: data['price'].toDouble(),
-          imageUrl: data['image'],
-        );
-      }).toList();
+  late bool isLoading = true;
+  late String errorMessage = '';
 
+  Future<void> apicall() async {
+    try {
+      http.Response response =
+          await http.get(Uri.parse("https://fakestoreapi.com/products"));
+      if (response.statusCode == 200) {
+        List<dynamic> productsData = json.decode(response.body);
+        List<Product> products = productsData.map((data) {
+          return Product(
+            title: data['title'],
+            price: data['price'].toDouble(),
+            imageUrl: data['image'],
+          );
+        }).toList();
+
+        setState(() {
+          productList = products;
+          isLoading = false;
+        });
+      } else {
+        // Handle non-200 status codes
+        setState(() {
+          errorMessage =
+              "Failed to fetch data. Status code: ${response.statusCode}";
+          isLoading = false;
+        });
+        print(errorMessage);
+      }
+    } catch (error) {
+      // Handle network errors
       setState(() {
-        productList = products;
+        errorMessage = "Error: $error";
+        isLoading = false;
       });
-    } else {
-      // Handle non-200 status codes
-      print("Failed to fetch data. Status code: ${response.statusCode}");
+      print(errorMessage);
     }
   }
 
@@ -59,24 +77,28 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Center(
         child: Container(
-          height: 200,
+          height: 600,
           width: 300,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: Colors.grey,
           ),
-          child: Center(
-            child: ListView.builder(
-              itemCount: productList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(productList[index].title),
-                  subtitle: Text(productList[index].price.toString()),
-                  leading: Image.network(productList[index].imageUrl),
-                );
-              },
-            ),
-          ),
+          child: isLoading
+              ? CircularProgressIndicator()
+              : errorMessage.isNotEmpty
+                  ? Center(
+                      child: Text(errorMessage),
+                    )
+                  : ListView.builder(
+                      itemCount: productList.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(productList[index].title),
+                          subtitle: Text(productList[index].price.toString()),
+                          leading: Image.network(productList[index].imageUrl),
+                        );
+                      },
+                    ),
         ),
       ),
     );
