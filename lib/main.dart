@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(const ApiApp());
 }
+
 class ApiApp extends StatelessWidget {
   const ApiApp({super.key});
 
@@ -11,7 +12,7 @@ class ApiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen( ),
+      home: HomeScreen(),
     );
   }
 }

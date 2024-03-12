@@ -1,9 +1,18 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-late List<dynamic> productList;
+class Product {
+  final String title;
+  final double price;
+  final String imageUrl;
+
+  Product({
+    required this.title,
+    required this.price,
+    required this.imageUrl,
+  });
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,13 +22,26 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late List<Product> productList;
   Future<void> apicall() async {
-    http.Response response;
-    response = await http.get(Uri.parse("https://fakestoreapi.com/products"));
+    http.Response response =
+        await http.get(Uri.parse("https://fakestoreapi.com/products"));
     if (response.statusCode == 200) {
+      List<dynamic> productsData = json.decode(response.body);
+      List<Product> products = productsData.map((data) {
+        return Product(
+          title: data['title'],
+          price: data['price'].toDouble(),
+          imageUrl: data['image'],
+        );
+      }).toList();
+
       setState(() {
-        productList = json.decode(response.body);
+        productList = products;
       });
+    } else {
+      // Handle non-200 status codes
+      print("Failed to fetch data. Status code: ${response.statusCode}");
     }
   }
 
@@ -48,8 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: productList.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(productList[index]['title']),
-                  subtitle: Text(productList[index]['price'].toString()),
+                  title: Text(productList[index].title),
+                  subtitle: Text(productList[index].price.toString()),
+                  leading: Image.network(productList[index].imageUrl),
                 );
               },
             ),
