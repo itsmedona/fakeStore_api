@@ -135,7 +135,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Trigger the POST request when the FloatingActionButton is pressed
           // postData();
         },
         child: Icon(Icons.add),
